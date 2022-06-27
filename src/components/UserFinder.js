@@ -1,27 +1,30 @@
-import { Fragment, useState, useEffect, Component } from "react";
+import { Fragment, useState, useEffect, Component } from 'react';
 
-import Users from "./Users";
-import classes from "./UserFinder.module.css";
-
-const DUMMY_USERS = [
-  { id: "u1", name: "Max" },
-  { id: "u2", name: "Manuel" },
-  { id: "u3", name: "Julie" },
-];
+import Users from './Users';
+import classes from './UserFinder.module.css';
+import UsersContext from '../store/users-context';
+import ErrorBoundary from './ErrorBoundary';
 
 class UserFinder extends Component {
+  static contextType = UsersContext;
+
   constructor() {
     super();
     this.state = {
-      filderedUsers: DUMMY_USERS,
-      searchTerm: "",
+      filteredUsers: [],
+      searchTerm: '',
     };
+  }
+
+  componentDidMount() {
+    // Send http request...
+    this.setState({ filteredUsers: this.context.users });
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchTerm !== this.state.searchTerm) {
       this.setState({
-        filteredUsers: DUMMY_USERS.filter((user) =>
+        filteredUsers: this.context.users.filter((user) =>
           user.name.includes(this.state.searchTerm)
         ),
       });
@@ -36,9 +39,11 @@ class UserFinder extends Component {
     return (
       <Fragment>
         <div className={classes.finder}>
-          <input type="search" onChange={this.searchChangeHandler.bind(this)} />
+          <input type='search' onChange={this.searchChangeHandler.bind(this)} />
         </div>
-        <Users users={this.state.filteredUsers} />
+        <ErrorBoundary>
+          <Users users={this.state.filteredUsers} />
+        </ErrorBoundary>
       </Fragment>
     );
   }
@@ -46,7 +51,7 @@ class UserFinder extends Component {
 
 // const UserFinder = () => {
 //   const [filteredUsers, setFilteredUsers] = useState(DUMMY_USERS);
-//   const [searchTerm, setSearchTerm] = useState("");
+//   const [searchTerm, setSearchTerm] = useState('');
 
 //   useEffect(() => {
 //     setFilteredUsers(
@@ -61,7 +66,7 @@ class UserFinder extends Component {
 //   return (
 //     <Fragment>
 //       <div className={classes.finder}>
-//         <input type="search" onChange={searchChangeHandler} />
+//         <input type='search' onChange={searchChangeHandler} />
 //       </div>
 //       <Users users={filteredUsers} />
 //     </Fragment>
