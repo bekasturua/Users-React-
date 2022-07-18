@@ -6,3 +6,7 @@
   max-width: 40rem;
   text-align: center;
 }
+
+.input {
+  text-transform: capitalize;
+}
